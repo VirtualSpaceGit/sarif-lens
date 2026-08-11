@@ -1,6 +1,6 @@
 {
   "name": "sarif-lens",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Inspect and compare SARIF locally with an offline workbench and zero-dependency Node CLI.",
   "type": "module",
   "bin": {

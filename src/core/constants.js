@@ -1,4 +1,4 @@
-export const SARIF_LENS_VERSION = "0.1.0";
+export const SARIF_LENS_VERSION = "0.1.1";
 
 export const SARIF_VERSION = "2.1.0";
 

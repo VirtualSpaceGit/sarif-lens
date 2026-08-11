@@ -65,11 +65,10 @@ Then configure Pages to use GitHub Actions if it is not selected automatically.
 1. Confirm `npm run check` passes from a clean clone.
 2. Review the package contents with `npm pack --dry-run`.
 3. Confirm the workbench and README links on Pages.
-4. Push tag `v0.1.0` to trigger the release workflow.
+4. Push tag `v0.1.1` to trigger the release workflow.
 5. Review the generated release notes and attached checksum.
 6. Reserve and publish the `sarif-lens` npm name from the owner account if desired.
 7. Add a short animated demo after capturing the live Pages build.
 8. Announce the specific workflow result, not a generic product launch.
 
 The npm package name and GitHub repository name appeared unclaimed when checked on 2026-08-11. That is an availability observation, not trademark clearance or a reservation.
-

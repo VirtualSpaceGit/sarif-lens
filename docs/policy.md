@@ -102,7 +102,7 @@ One finding can produce more than one violation because each policy statement re
 `--fail-on`, `--max-new`, `--include-updated`, and `--include-suppressed` override the equivalent JSON fields for one invocation.
 
 ```bash
-npx sarif-lens gate baseline.sarif current.sarif \
+npx --yes github:VirtualSpaceGit/sarif-lens gate baseline.sarif current.sarif \
   --policy .sarif-lens.json \
   --fail-on critical \
   --max-new 3

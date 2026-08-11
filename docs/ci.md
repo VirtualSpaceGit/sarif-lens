@@ -25,7 +25,7 @@ jobs:
 
       - name: Enforce SARIF policy
         id: lens
-        uses: VirtualSpaceGit/sarif-lens@v0.1.0
+        uses: VirtualSpaceGit/sarif-lens@v0.1.1
         with:
           baseline: .security/baseline.sarif
           current: current.sarif
@@ -74,7 +74,7 @@ A practical baseline workflow is:
 5. Replace it only after the new state is reviewed and accepted.
 
 ```bash
-npx sarif-lens baseline current.sarif -o .security/sarif-baseline.json
+npx --yes github:VirtualSpaceGit/sarif-lens baseline current.sarif -o .security/sarif-baseline.json
 ```
 
 Do not update a baseline automatically after a failed gate. That turns a policy decision into an unreviewed build side effect.

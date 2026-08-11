@@ -4,6 +4,13 @@ All notable changes are documented here. This project follows [Semantic Versioni
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-08-11
+
+### Fixed
+
+- Quick-start commands install directly from GitHub until the npm package is published
+- Removed the hosted-workbench link until GitHub Pages is enabled
+
 ## [0.1.0] - 2026-08-11
 
 ### Added
@@ -19,6 +26,6 @@ All notable changes are documented here. This project follows [Semantic Versioni
 - Synthetic demo fixtures and automated tests
 - Security, privacy, contribution, and matching documentation
 
-[Unreleased]: https://github.com/VirtualSpaceGit/sarif-lens/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/VirtualSpaceGit/sarif-lens/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/VirtualSpaceGit/sarif-lens/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/VirtualSpaceGit/sarif-lens/releases/tag/v0.1.0
-

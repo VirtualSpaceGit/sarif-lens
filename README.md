@@ -25,7 +25,7 @@ No account. No upload. No telemetry.
 
 ## Quick start
 
-Try the hosted workbench at [virtualspacegit.github.io/sarif-lens](https://virtualspacegit.github.io/sarif-lens/) or run it locally:
+Run the offline workbench locally:
 
 ```bash
 git clone https://github.com/VirtualSpaceGit/sarif-lens.git
@@ -36,7 +36,7 @@ npm run serve
 Load the included example in the browser, or compare it from the terminal:
 
 ```bash
-npx sarif-lens diff examples/baseline.sarif examples/current.sarif
+npx --yes github:VirtualSpaceGit/sarif-lens diff examples/baseline.sarif examples/current.sarif
 ```
 
 ```text
@@ -80,23 +80,23 @@ Examples:
 
 ```bash
 # Inspect one report
-npx sarif-lens inspect results.sarif
+npx --yes github:VirtualSpaceGit/sarif-lens inspect results.sarif
 
 # Save a compact baseline for the next build
-npx sarif-lens baseline results.sarif -o .sarif-lens-baseline.json
+npx --yes github:VirtualSpaceGit/sarif-lens baseline results.sarif -o .sarif-lens-baseline.json
 
 # Export only new and updated findings
-npx sarif-lens diff old.sarif new.sarif \
+npx --yes github:VirtualSpaceGit/sarif-lens diff old.sarif new.sarif \
   --state new,updated \
   --format markdown \
   --output security-delta.md
 
 # Normalize a changing checkout prefix before matching
-npx sarif-lens diff old.sarif new.sarif \
+npx --yes github:VirtualSpaceGit/sarif-lens diff old.sarif new.sarif \
   --strip-prefix /home/runner/work/project
 
 # Fail when a new high or critical result appears
-npx sarif-lens gate old.sarif new.sarif --fail-on high
+npx --yes github:VirtualSpaceGit/sarif-lens gate old.sarif new.sarif --fail-on high
 ```
 
 Exit codes are stable for CI:
@@ -174,7 +174,7 @@ jobs:
       - uses: actions/checkout@v6
       - name: Run your scanner
         run: your-scanner --sarif current.sarif
-      - uses: VirtualSpaceGit/sarif-lens@v0.1.0
+      - uses: VirtualSpaceGit/sarif-lens@v0.1.1
         with:
           baseline: .security/baseline.sarif
           current: current.sarif
