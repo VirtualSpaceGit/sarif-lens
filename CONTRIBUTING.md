@@ -32,7 +32,8 @@ There are no runtime dependencies. Development should preserve that property unl
 3. Keep output deterministic and stable.
 4. Update the changelog for user-visible changes.
 5. Document any change to identity, severity, or policy semantics.
-6. Confirm that added text contains no em dash characters.
+
+Documentation uses direct language and ASCII punctuation. `npm run lint` checks the repository's text conventions.
 
 ## Matching changes
 
@@ -57,4 +58,3 @@ Test keyboard navigation and responsive behavior. Keep report processing in the 
 Use a short imperative subject, for example `Handle duplicate partial fingerprints`. Keep each pull request focused. Describe the user problem, evidence, solution, and tests.
 
 By participating, you agree to follow [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
-

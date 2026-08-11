@@ -13,7 +13,12 @@
     "bin",
     "src",
     "web",
-    "docs",
+    "docs/assets",
+    "docs/ci.md",
+    "docs/matching.md",
+    "docs/policy.md",
+    "docs/policy.schema.json",
+    "docs/security-model.md",
     "examples",
     "action.yml",
     "LICENSE",
@@ -46,7 +51,7 @@
   "bugs": {
     "url": "https://github.com/VirtualSpaceGit/sarif-lens/issues"
   },
-  "homepage": "https://virtualspacegit.github.io/sarif-lens/",
+  "homepage": "https://github.com/VirtualSpaceGit/sarif-lens#readme",
   "keywords": [
     "sarif",
     "sast",

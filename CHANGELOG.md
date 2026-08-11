@@ -4,6 +4,19 @@ All notable changes are documented here. This project follows [Semantic Versioni
 
 ## [Unreleased]
 
+### Changed
+
+- Tightened early-release and scanner-compatibility language
+- Limited the npm package to user-facing documentation
+- Updated GitHub workflows and examples to `actions/checkout@v7`
+- Added an end-to-end check for the local GitHub Action metadata
+- Removed unused npm caches from zero-dependency workflows
+
+### Removed
+
+- Internal research and stale publication notes
+- Custom Pages workflow in favor of GitHub's branch publishing
+
 ## [0.1.1] - 2026-08-11
 
 ### Fixed

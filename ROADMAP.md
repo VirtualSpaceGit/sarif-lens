@@ -1,25 +1,12 @@
 # Roadmap
 
-SARIF Lens follows user problems, interoperability evidence, and security impact. Dates are intentionally not promised.
+SARIF Lens is early. Work is prioritized from reproducible issues, synthetic fixtures, and security impact rather than a long feature checklist.
 
-## Next
+## Current priorities
 
-- Add license-safe fixtures modeled on major SARIF producers
-- Select the latest common version for versioned partial fingerprint families
-- Resolve `originalUriBaseIds` safely
-- Add Git rename-map input without invoking Git automatically
-- Benchmark 25,000-result runs and publish memory and time results
-- Add browser cancellation and clearer progress reporting
-- Add strict opt-in SARIF schema conformance checks
-
-## Later
-
-- Standalone single-file offline workbench build
-- Redacted standalone HTML review reports
-- Policy selectors for tags, CWE, path, tool, and match confidence
-- Reviewed exceptions keyed to stable finding identity
-- Optional GitHub annotations from the Action
-- Machined compatibility reports for scanner maintainers
+- Add license-safe fixtures for producer-specific path and fingerprint behavior
+- Resolve SARIF `originalUriBaseIds` without fetching files or trusting remote URIs
+- Export a portable, redacted HTML review report
 
 ## Non-goals
 
@@ -31,4 +18,3 @@ SARIF Lens follows user problems, interoperability evidence, and security impact
 - Artifact or source fetching
 
 Open an issue with a concrete workflow and sample synthetic SARIF when proposing roadmap changes.
-

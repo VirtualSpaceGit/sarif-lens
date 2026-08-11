@@ -13,5 +13,3 @@ Describe the implementation and any matching, policy, security, or compatibility
 - [ ] `npm run check` passes.
 - [ ] User-facing documentation is updated.
 - [ ] Fixtures contain only synthetic or license-safe data.
-- [ ] Added text contains no em dash characters.
-

@@ -4,7 +4,7 @@
 
 <h1 align="center">SARIF Lens</h1>
 
-<p align="center"><strong>Review, diff, and gate any SARIF report. Fully local.</strong></p>
+<p align="center"><strong>Compare SARIF findings across runs, locally.</strong></p>
 
 <p align="center">
   <a href="https://github.com/VirtualSpaceGit/sarif-lens/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/VirtualSpaceGit/sarif-lens/actions/workflows/ci.yml/badge.svg"></a>
@@ -17,11 +17,13 @@
   <img src="docs/assets/demo.svg" alt="SARIF Lens compares a baseline and current SARIF report and identifies new, updated, fixed, and unchanged findings">
 </p>
 
-Security scans answer what exists now. Code review needs a different answer: what changed?
+Static-analysis reports are good at showing what exists in one run. During review, the harder question is whether a particular finding is new, moved, changed, or fixed.
 
 SARIF Lens matches finding instances across two SARIF 2.1.0 reports, then classifies each result as new, updated, fixed, or unchanged. The same deterministic engine powers an offline browser workbench, a zero-runtime-dependency Node CLI, and a GitHub Action policy gate.
 
 No account. No upload. No telemetry.
+
+This is an early release. The core diff and gate are usable now, but producer-specific fingerprints and path normalization still have edge cases. If a report does not match as expected, open an issue with a small synthetic fixture.
 
 ## Quick start
 
@@ -53,7 +55,9 @@ New 2  Updated 1  Fixed 2  Unchanged 1
   changed: severity, message
 ```
 
-Built by [Verse](https://virtualspacesec.com), creator of VirtualSpace AppSec. SARIF Lens is complete on its own and works with any SARIF 2.1.0 producer.
+Maintained by [Verse](https://virtualspacesec.com), creator of VirtualSpace AppSec. SARIF Lens accepts SARIF 2.1.0 from conforming scanners and does not require VirtualSpace AppSec.
+
+For a quick terminal rendering of one report, see [sarif-pretty](https://github.com/VirtualSpaceGit/sarif-pretty). SARIF Lens focuses on baseline comparison, explainable matching, browser review, and CI policy gates.
 
 ## What it does
 
@@ -171,7 +175,7 @@ jobs:
   gate:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Run your scanner
         run: your-scanner --sarif current.sarif
       - uses: VirtualSpaceGit/sarif-lens@v0.1.1
@@ -195,7 +199,7 @@ Read [the security model](docs/security-model.md) and report vulnerabilities thr
 
 ## Compatibility and scope
 
-SARIF Lens consumes SARIF 2.1.0 JSON and SARIF Lens compact baselines. It is scanner-neutral, so a report can come from VirtualSpace AppSec, CodeQL, Semgrep, Trivy, Bandit, ESLint, or another conforming producer.
+SARIF Lens consumes SARIF 2.1.0 JSON and SARIF Lens compact baselines. The parser is scanner-neutral, but real producers sometimes use paths and fingerprints differently. Compatibility work is tracked through synthetic fixtures rather than private scan data.
 
 Version 0.1 deliberately does not:
 
@@ -216,9 +220,7 @@ The core is available through the package root:
 ```js
 import { diffAnalyses, loadAnalysis } from "sarif-lens";
 
-const baseline = loadAnalysis(baselineText, { sourceName: "baseline.sarif" });
-const current = loadAnalysis(currentText, { sourceName: "current.sarif" });
-const delta = diffAnalyses(baseline, current);
+co…40 tokens truncated…onst delta = diffAnalyses(baseline, current);
 
 console.log(delta.summary);
 ```
@@ -236,13 +238,9 @@ npm run check
 npm run benchmark
 ```
 
-`npm run check` runs source checks, the complete test suite, and an npm package dry run. `npm run benchmark` verifies a synthetic 25,000-result comparison without applying a machine-specific time threshold. CI tests Node 22, 24, and 26.
+`npm run check` runs source checks, tests, and an npm package dry run. `npm run benchmark` verifies a synthetic 25,000-result comparison without applying a machine-specific time threshold. CI tests Node 22, 24, and 26.
 
 Contributions are welcome. Start with [CONTRIBUTING.md](CONTRIBUTING.md), the [roadmap](ROADMAP.md), or a fixture that represents a producer edge case without including private scan data.
-
-## Related project
-
-[sarif-pretty](https://github.com/VirtualSpaceGit/sarif-pretty) is a small Python utility for quickly rendering a single SARIF file. SARIF Lens serves a different workflow: baseline comparison, explainable finding identity, browser investigation, and policy gates.
 
 ## License
 
