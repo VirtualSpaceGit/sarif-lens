@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://virtualspacegit.github.io/sarif-lens/policy.schema.json",
+  "title": "SARIF Lens policy",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "version": { "const": 1 },
+    "failOn": {
+      "enum": ["critical", "high", "medium", "low", "note", "none"]
+    },
+    "maxNew": {
+      "type": ["integer", "null"],
+      "minimum": 0
+    },
+    "maxNewBySeverity": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "critical": { "type": ["integer", "null"], "minimum": 0 },
+        "high": { "type": ["integer", "null"], "minimum": 0 },
+        "medium": { "type": ["integer", "null"], "minimum": 0 },
+        "low": { "type": ["integer", "null"], "minimum": 0 },
+        "note": { "type": ["integer", "null"], "minimum": 0 },
+        "none": { "type": ["integer", "null"], "minimum": 0 }
+      }
+    },
+    "includeUpdated": { "type": "boolean" },
+    "includeSuppressed": { "type": "boolean" },
+    "denyRules": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    },
+    "ignore": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "rule": { "type": "string", "minLength": 1 },
+          "path": { "type": "string", "minLength": 1 },
+          "tool": { "type": "string", "minLength": 1 },
+          "state": { "type": "string", "minLength": 1 },
+          "reason": { "type": "string" },
+          "expires": { "type": "string", "format": "date" }
+        },
+        "anyOf": [
+          { "required": ["rule"] },
+          { "required": ["path"] },
+          { "required": ["tool"] },
+          { "required": ["state"] }
+        ]
+      }
+    }
+  },
+  "required": ["version"]
+}

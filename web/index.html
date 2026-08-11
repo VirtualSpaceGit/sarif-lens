@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Review, diff, and gate any SARIF report. Fully local.">
+    <meta name="theme-color" content="#0b1020">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; worker-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+    <title>SARIF Lens | Local SARIF review and baseline diff</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#workspace">Skip to workbench</a>
+    <header class="site-header">
+      <a class="brand" href="./" aria-label="SARIF Lens home">
+        <span class="brand-mark" aria-hidden="true"><span></span></span>
+        <span>SARIF Lens</span>
+      </a>
+      <nav aria-label="Project links">
+        <a href="matching.html">Matching model</a>
+        <a href="https://github.com/VirtualSpaceGit/sarif-lens" rel="noopener noreferrer">GitHub</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <div class="eyebrow"><span></span> Local by design</div>
+          <h1 id="hero-title">See what changed in any SARIF scan.</h1>
+          <p class="hero-lead">Load a baseline and a current report. SARIF Lens matches finding instances and shows what is new, fixed, updated, or unchanged.</p>
+          <div class="hero-points" aria-label="Key properties">
+            <span>No upload</span>
+            <span>No account</span>
+            <span>No telemetry</span>
+            <span>SARIF 2.1.0</span>
+          </div>
+        </div>
+        <div class="hero-visual" aria-hidden="true">
+          <div class="scan-card scan-card-before">
+            <span>baseline.sarif</span>
+            <i></i><i></i><i></i><i></i>
+          </div>
+          <div class="lens-orbit"><div class="lens-core"></div></div>
+          <div class="scan-card scan-card-after">
+            <span>current.sarif</span>
+            <i class="line-new"></i><i></i><i class="line-fixed"></i><i></i>
+          </div>
+        </div>
+      </section>
+
+      <section class="workspace" id="workspace" aria-labelledby="workspace-title">
+        <div class="workspace-heading">
+          <div>
+            <p class="section-kicker">Offline workbench</p>
+            <h2 id="workspace-title">Compare two scans</h2>
+          </div>
+          <button class="button button-quiet" id="load-demo" type="button">Load example</button>
+        </div>
+
+        <div class="drop-grid">
+          <label class="drop-zone" id="baseline-zone" for="baseline-file" tabindex="0">
+            <input id="baseline-file" type="file" accept=".sarif,.json,application/json">
+            <span class="drop-number">01</span>
+            <strong>Baseline</strong>
+            <span class="drop-help">Previous SARIF or compact Lens baseline</span>
+            <span class="file-status" id="baseline-status">Drop a file or choose one</span>
+          </label>
+          <label class="drop-zone" id="current-zone" for="current-file" tabindex="0">
+            <input id="current-file" type="file" accept=".sarif,.json,application/json">
+            <span class="drop-number">02</span>
+            <strong>Current scan</strong>
+            <span class="drop-help">Required SARIF 2.1.0 report</span>
+            <span class="file-status" id="current-status">Drop a file or choose one</span>
+          </label>
+        </div>
+
+        <div class="workspace-actions">
+          <button class="button button-primary" id="compare" type="button" disabled>
+            <span>Compare findings</span><span aria-hidden="true">→</span>
+          </button>
+          <button class="button button-quiet" id="reset" type="button">Reset</button>
+          <p class="privacy-note"><span aria-hidden="true">●</span> Files are parsed in a Web Worker and remain in browser memory.</p>
+        </div>
+        <div class="notice" id="notice" role="status" aria-live="polite" hidden></div>
+      </section>
+
+      <section class="results" id="results" aria-labelledby="results-title" hidden>
+        <div class="results-heading">
+          <div>
+            <p class="section-kicker">Finding-level delta</p>
+            <h2 id="results-title">Comparison result</h2>
+            <p id="result-sources"></p>
+          </div>
+          <div class="export-group" aria-label="Export options">
+            <button class="button button-quiet export" data-format="markdown" type="button">Markdown</button>
+            <button class="button button-quiet export" data-format="csv" type="button">CSV</button>
+            <button class="button button-quiet export" data-format="json" type="button">JSON</button>
+            <button class="button button-quiet export" data-format="sarif" type="button">SARIF</button>
+            <button class="button button-quiet" id="save-baseline" type="button">Save baseline</button>
+          </div>
+        </div>
+
+        <div class="summary-grid" aria-label="Comparison counts">
+          <button class="summary-card summary-new" data-state="new" type="button">
+            <span>New</span><strong id="count-new">0</strong><small>Introduced now</small>
+          </button>
+          <button class="summary-card summary-updated" data-state="updated" type="button">
+            <span>Updated</span><strong id="count-updated">0</strong><small>Significant change</small>
+          </button>
+          <button class="summary-card summary-fixed" data-state="fixed" type="button">
+            <span>Fixed</span><strong id="count-fixed">0</strong><small>No longer present</small>
+          </button>
+          <button class="summary-card summary-unchanged" data-state="unchanged" type="button">
+            <span>Unchanged</span><strong id="count-unchanged">0</strong><small>Stable identity</small>
+          </button>
+        </div>
+
+        <div class="filter-bar">
+          <label class="search-field">
+            <span class="sr-only">Search findings</span>
+            <span aria-hidden="true">⌕</span>
+            <input id="search" type="search" placeholder="Search rule, path, CWE, tool, or message">
+          </label>
+          <label>
+            <span class="sr-only">Filter state</span>
+            <select id="state-filter">
+              <option value="">All states</option>
+              <option value="new">New</option>
+              <option value="updated">Updated</option>
+              <option value="fixed">Fixed</option>
+              <option value="unchanged">Unchanged</option>
+            </select>
+          </label>
+          <label>
+            <span class="sr-only">Filter severity</span>
+            <select id="severity-filter">
+              <option value="">All severities</option>
+              <option value="critical">Critical</option>
+              <option value="high">High</option>
+              <option value="medium">Medium</option>
+              <option value="low">Low</option>
+              <option value="note">Note</option>
+              <option value="none">None</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="list-meta">
+          <p id="visible-count">0 findings</p>
+          <p id="warning-count"></p>
+        </div>
+        <div class="finding-list" id="finding-list" aria-live="polite"></div>
+        <div class="pagination" id="pagination" hidden>
+          <button class="button button-quiet" id="page-prev" type="button">Previous</button>
+          <span id="page-label"></span>
+          <button class="button button-quiet" id="page-next" type="button">Next</button>
+        </div>
+      </section>
+
+      <section class="how-it-works" aria-labelledby="how-title">
+        <div>
+          <p class="section-kicker">Trust the comparison</p>
+          <h2 id="how-title">Every match explains itself.</h2>
+          <p>SARIF Lens prefers producer correlation IDs and fingerprints, then uses stable snippet or message evidence. Absolute line numbers never define primary identity. Ambiguous candidates remain separate instead of being silently merged.</p>
+          <a href="matching.html">Read the matching model →</a>
+        </div>
+        <ol>
+          <li><span>1</span><div><strong>Pair analysis runs</strong><p>Baseline GUID, automation identity, then deterministic tool pairing.</p></div></li>
+          <li><span>2</span><div><strong>Match finding instances</strong><p>Collision-safe, one-to-one matching with documented precedence.</p></div></li>
+          <li><span>3</span><div><strong>Explain the delta</strong><p>New, fixed, updated, unchanged, movement, and match confidence.</p></div></li>
+        </ol>
+      </section>
+    </main>
+
+    <footer>
+      <p>Built by <a href="https://virtualspacesec.com" rel="noopener noreferrer">Verse, creator of VirtualSpace AppSec</a>. Works with any SARIF 2.1.0 producer.</p>
+      <p>MIT licensed. No report data leaves your device.</p>
+    </footer>
+
+    <dialog id="detail-dialog" aria-labelledby="detail-title">
+      <div class="dialog-header">
+        <div>
+          <p class="section-kicker" id="detail-state"></p>
+          <h2 id="detail-title">Finding detail</h2>
+        </div>
+        <button class="dialog-close" id="detail-close" type="button" aria-label="Close finding detail">×</button>
+      </div>
+      <div id="detail-content"></div>
+    </dialog>
+
+    <script type="module" src="app.js"></script>
+  </body>
+</html>

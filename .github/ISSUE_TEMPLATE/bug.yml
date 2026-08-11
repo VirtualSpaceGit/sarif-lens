@@ -1,0 +1,45 @@
+name: Bug report
+description: Report incorrect parsing, matching, output, policy, or workbench behavior.
+title: "bug: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Do not attach private scan reports, proprietary source, or credentials. Reduce the issue to synthetic SARIF.
+  - type: input
+    id: version
+    attributes:
+      label: SARIF Lens version
+      placeholder: 0.1.0
+    validations:
+      required: true
+  - type: dropdown
+    id: interface
+    attributes:
+      label: Interface
+      options:
+        - Browser workbench
+        - CLI
+        - Library API
+        - GitHub Action
+    validations:
+      required: true
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Actual behavior
+      description: Include the smallest synthetic input and exact command when possible.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Operating system, Node version, and browser if relevant.
+

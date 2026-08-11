@@ -1,0 +1,56 @@
+name: SARIF Lens gate
+description: Compare SARIF findings against a baseline and enforce a local policy gate.
+author: Verse
+branding:
+  icon: eye
+  color: blue
+inputs:
+  baseline:
+    description: Path to a SARIF log or compact SARIF Lens baseline.
+    required: true
+  current:
+    description: Path to the current SARIF 2.1.0 log.
+    required: true
+  policy:
+    description: Optional path to a SARIF Lens policy JSON file.
+    required: false
+  fail-on:
+    description: Optional severity threshold that overrides policy failOn.
+    required: false
+  max-new:
+    description: Optional new-finding limit that overrides policy maxNew.
+    required: false
+  report:
+    description: Markdown report path.
+    required: false
+    default: sarif-lens-report.md
+outputs:
+  passed:
+    description: Whether the policy gate passed.
+    value: ${{ steps.gate.outputs.passed }}
+  new:
+    description: Number of new findings.
+    value: ${{ steps.gate.outputs.new }}
+  updated:
+    description: Number of updated findings.
+    value: ${{ steps.gate.outputs.updated }}
+  fixed:
+    description: Number of fixed findings.
+    value: ${{ steps.gate.outputs.fixed }}
+  report:
+    description: Markdown report path.
+    value: ${{ steps.gate.outputs.report }}
+runs:
+  using: composite
+  steps:
+    - id: gate
+      shell: bash
+      env:
+        INPUT_BASELINE: ${{ inputs.baseline }}
+        INPUT_CURRENT: ${{ inputs.current }}
+        INPUT_POLICY: ${{ inputs.policy }}
+        INPUT_FAIL_ON: ${{ inputs.fail-on }}
+        INPUT_MAX_NEW: ${{ inputs.max-new }}
+        INPUT_REPORT: ${{ inputs.report }}
+      run: node "$GITHUB_ACTION_PATH/src/action.js"
+

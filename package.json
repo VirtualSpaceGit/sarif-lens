@@ -1,0 +1,60 @@
+{
+  "name": "sarif-lens",
+  "version": "0.1.0",
+  "description": "Inspect and compare SARIF locally with an offline workbench and zero-dependency Node CLI.",
+  "type": "module",
+  "bin": {
+    "sarif-lens": "./bin/sarif-lens.js"
+  },
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": [
+    "bin",
+    "src",
+    "web",
+    "docs",
+    "examples",
+    "action.yml",
+    "LICENSE",
+    "README.md",
+    "SECURITY.md"
+  ],
+  "scripts": {
+    "test": "node --test --test-reporter=spec \"test/*.test.js\"",
+    "lint": "node scripts/check.js",
+    "check": "npm run lint && npm test && npm pack --dry-run",
+    "serve": "node scripts/serve.js",
+    "benchmark": "node scripts/benchmark.js",
+    "demo": "node bin/sarif-lens.js diff examples/baseline.sarif examples/current.sarif --no-color",
+    "demo:gate": "node bin/sarif-lens.js gate examples/baseline.sarif examples/current.sarif --policy examples/policy.json --no-color"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "author": "Verse",
+  "license": "MIT",
+  "sideEffects": false,
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/VirtualSpaceGit/sarif-lens.git"
+  },
+  "bugs": {
+    "url": "https://github.com/VirtualSpaceGit/sarif-lens/issues"
+  },
+  "homepage": "https://virtualspacegit.github.io/sarif-lens/",
+  "keywords": [
+    "sarif",
+    "sast",
+    "appsec",
+    "baseline",
+    "diff",
+    "ci",
+    "code-scanning",
+    "offline"
+  ]
+}

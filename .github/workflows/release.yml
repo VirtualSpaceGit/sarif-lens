@@ -1,0 +1,136 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.repository }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+      - name: Resolve and verify release tag
+        id: release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          package_version="$(node -p 'require("./package.json").version')"
+          tag="v${package_version}"
+
+          if [[ "$GITHUB_EVENT_NAME" == "push" ]]; then
+            if [[ "$GITHUB_REF_TYPE" != "tag" || "$GITHUB_REF_NAME" != "$tag" ]]; then
+              echo "Tag $GITHUB_REF_NAME does not match package version $package_version." >&2
+              exit 1
+            fi
+          elif [[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" ]]; then
+            if [[ "$GITHUB_REF" != "refs/heads/main" ]]; then
+              echo "Manual releases must be dispatched from main." >&2
+              exit 1
+            fi
+
+            remote_main="$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/main" --jq '.object.sha')"
+            if [[ "$GITHUB_SHA" != "$remote_main" ]]; then
+              echo "The dispatched commit is no longer the tip of main." >&2
+              exit 1
+            fi
+          else
+            echo "Unsupported release event: $GITHUB_EVENT_NAME" >&2
+            exit 1
+          fi
+
+          echo "package_version=$package_version" >> "$GITHUB_OUTPUT"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+      - name: Build package and checksums
+        id: package
+        shell: bash
+        run: |
+          set -euo pipefail
+          package_file="$(npm pack --json | node -e 'let value="";process.stdin.on("data",chunk=>value+=chunk);process.stdin.on("end",()=>{const data=JSON.parse(value);if(data.length!==1||!data[0].filename)process.exit(1);process.stdout.write(data[0].filename)})')"
+          sha256sum "$package_file" > SHA256SUMS
+          echo "file=$package_file" >> "$GITHUB_OUTPUT"
+      - name: Create package tag for a manual release
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          RELEASE_TAG: ${{ steps.release.outputs.tag }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          remote_tag_commit() {
+            local refs peeled direct
+            refs="$(git ls-remote --tags origin "refs/tags/${RELEASE_TAG}" "refs/tags/${RELEASE_TAG}^{}")"
+            peeled="$(printf '%s\n' "$refs" | awk '$2 ~ /\^\{\}$/ { print $1; exit }')"
+            direct="$(printf '%s\n' "$refs" | awk '$2 !~ /\^\{\}$/ { print $1; exit }')"
+            printf '%s' "${peeled:-$direct}"
+          }
+
+          existing_commit="$(remote_tag_commit)"
+          if [[ -n "$existing_commit" ]]; then
+            if [[ "$existing_commit" != "$GITHUB_SHA" ]]; then
+              echo "Tag $RELEASE_TAG already points to $existing_commit, not $GITHUB_SHA." >&2
+              exit 1
+            fi
+            echo "Tag $RELEASE_TAG already points to the release commit."
+            exit 0
+          fi
+
+          git tag "$RELEASE_TAG" "$GITHUB_SHA"
+          if git push origin "refs/tags/${RELEASE_TAG}"; then
+            echo "Created tag $RELEASE_TAG at $GITHUB_SHA."
+            exit 0
+          fi
+
+          existing_commit="$(remote_tag_commit)"
+          if [[ "$existing_commit" == "$GITHUB_SHA" ]]; then
+            echo "Tag $RELEASE_TAG was created concurrently at the expected commit."
+            exit 0
+          fi
+          echo "Could not safely create tag $RELEASE_TAG." >&2
+          exit 1
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ steps.release.outputs.tag }}
+          PACKAGE_FILE: ${{ steps.package.outputs.file }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "Release $RELEASE_TAG already exists."
+            exit 0
+          fi
+
+          if gh release create "$RELEASE_TAG" "$PACKAGE_FILE" SHA256SUMS \
+            --repo "$GITHUB_REPOSITORY" \
+            --generate-notes \
+            --verify-tag; then
+            exit 0
+          fi
+
+          if gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "Release $RELEASE_TAG was created concurrently."
+            exit 0
+          fi
+          echo "Could not create release $RELEASE_TAG." >&2
+          exit 1

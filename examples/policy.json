@@ -1,0 +1,21 @@
+{
+  "$schema": "../docs/policy.schema.json",
+  "version": 1,
+  "failOn": "high",
+  "maxNew": 5,
+  "maxNewBySeverity": {
+    "critical": 0
+  },
+  "includeUpdated": false,
+  "includeSuppressed": false,
+  "denyRules": [],
+  "ignore": [
+    {
+      "rule": "DEMO-TEST-*",
+      "path": "test/**",
+      "reason": "Synthetic test fixture",
+      "expires": "2027-01-31"
+    }
+  ]
+}
+

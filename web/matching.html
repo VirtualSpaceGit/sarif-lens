@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="How SARIF Lens pairs runs and matches finding instances across SARIF reports.">
+    <meta name="theme-color" content="#0b1020">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'none'; style-src 'self'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+    <title>Matching model | SARIF Lens</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#matching">Skip to matching model</a>
+    <header class="site-header">
+      <a class="brand" href="./" aria-label="SARIF Lens home">
+        <span class="brand-mark" aria-hidden="true"><span></span></span>
+        <span>SARIF Lens</span>
+      </a>
+      <nav aria-label="Project links">
+        <a href="./">Workbench</a>
+        <a href="https://github.com/VirtualSpaceGit/sarif-lens" rel="noopener noreferrer">GitHub</a>
+      </nav>
+    </header>
+
+    <main class="doc-shell" id="matching">
+      <p class="section-kicker">Matching model</p>
+      <h1>Every comparison should explain itself.</h1>
+      <p class="doc-lead">SARIF Lens compares finding instances, not totals by rule. It preserves stable identity across ordinary source movement and refuses matches that are ambiguous.</p>
+
+      <section class="doc-section">
+        <h2>Pair analysis runs</h2>
+        <p>Results can match only inside paired runs. SARIF Lens tries the current run's <code>baselineGuid</code> against the baseline run's <code>automationDetails.guid</code>, then automation ID and tool name, tool name and run index, and finally a tool name that is unique on both sides.</p>
+        <p>An ambiguous run remains unpaired. Its baseline results become fixed and its current results become new.</p>
+      </section>
+
+      <section class="doc-section">
+        <h2>Match results one to one</h2>
+        <ol class="signal-list">
+          <li><span>01</span><div><strong>Correlation GUID</strong><p>Exact producer identity.</p></div></li>
+          <li><span>02</span><div><strong>Final fingerprint</strong><p>Exact common fingerprint entry.</p></div></li>
+          <li><span>03</span><div><strong>Partial fingerprint</strong><p>High-confidence producer evidence.</p></div></li>
+          <li><span>04</span><div><strong>Snippet and path</strong><p>Normalized stable source evidence.</p></div></li>
+          <li><span>05</span><div><strong>Message and path</strong><p>Deterministic medium-confidence fallback.</p></div></li>
+          <li><span>06</span><div><strong>Path and line</strong><p>Low-confidence compatibility fallback.</p></div></li>
+        </ol>
+        <p>Tool name and rule ID scope every key. A match is accepted only when exactly one result exists on each side of the candidate relationship. Duplicate fingerprints stay separate and produce a matching note.</p>
+      </section>
+
+      <section class="doc-section">
+        <h2>Explain the delta</h2>
+        <div class="doc-state-grid">
+          <article><span class="state-new">New</span><p>No baseline result matched.</p></article>
+          <article><span class="state-updated">Updated</span><p>A matched result changed in a significant field.</p></article>
+          <article><span class="state-fixed">Fixed</span><p>No current result matched.</p></article>
+          <article><span class="state-unchanged">Unchanged</span><p>A matched result has no significant change.</p></article>
+        </div>
+        <p>Severity, message, path, snippet, CWE, and accepted suppression state are significant. Line and column changes are recorded as movement and do not make a result updated by themselves.</p>
+      </section>
+
+      <section class="doc-callout">
+        <h2>Line numbers come last.</h2>
+        <p>An inserted comment can move many findings without changing the underlying problems. Absolute line positions are therefore never primary identity. This follows the guidance in the <a href="https://docs.oasis-open.org/sarif/sarif/v2.1.0/os/sarif-v2.1.0-os.html" rel="noopener noreferrer">SARIF 2.1.0 specification</a>.</p>
+      </section>
+
+      <p class="doc-more">The complete behavior, limitations, and normalized path rules are documented in <a href="https://github.com/VirtualSpaceGit/sarif-lens/blob/main/docs/matching.md" rel="noopener noreferrer">docs/matching.md</a>.</p>
+    </main>
+
+    <footer>
+      <p>Built by <a href="https://virtualspacesec.com" rel="noopener noreferrer">Verse, creator of VirtualSpace AppSec</a>.</p>
+      <p><a href="./">Open the local workbench</a></p>
+    </footer>
+  </body>
+</html>

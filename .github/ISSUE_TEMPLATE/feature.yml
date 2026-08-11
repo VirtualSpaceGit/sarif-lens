@@ -1,0 +1,33 @@
+name: Feature request
+description: Propose a focused review, matching, policy, or interoperability improvement.
+title: "feature: "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: User problem
+      description: Describe the blocked workflow before describing a solution.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence and example
+      description: Include synthetic SARIF or a public specification link where useful.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: Scope check
+      options:
+        - label: This keeps SARIF Lens scanner-neutral and local-first.
+          required: true
+        - label: Any example data is synthetic or license-safe.
+          required: true
+
